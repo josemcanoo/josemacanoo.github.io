@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+ <head>
+    <meta charset="utf-8" /> <!-- Define el conjunto de caracteres para el documento HTML como UTF-8 -->
+    <title>Juego adivina el número</title> <!-- Define el título del documento HTML -->
+    <style>
+      html {
+        font-family: sans-serif; 
+      }
+
+      body {
+        width: 50%; 
+        max-width: 800px; 
+        min-width: 480px; 
+      }
+
+      .lastResult {
+        color: white; 
+        padding: 3px; 
+      }
+    </style>
+ </head>
+
+ <body>
+    <h1>Juego adivina el número</h1> <!-- Título del juego -->
+    <p>
+      Hemos seleccionado un número aleatorio entre 1 y 100. Fíjate si lo puedes
+      adivinar en 10 turnos o menos. Vamos a decirte si tu número es más alto o
+      más bajo.
+    </p> <!-- Instrucciones del juego -->
+    <div class="form">
+      <label for="guessField">Adivina el numero: </label> <!-- Etiqueta para el campo de entrada del número a adivinar -->
+      <input type="text" id="guessField" class="guessField" /> <!-- Campo de entrada para el número a adivinar -->
+      <input type="submit" value="Enviar respuesta" class="guessSubmit" /> <!-- Botón para enviar el número adivinado -->
+    </div> <!-- Contenedor del formulario de entrada -->
+    <div class="resultParas">
+      <p class="guesses"></p> <!-- Párrafo para mostrar los intentos anteriores -->
+      <p class="lastResult"></p> <!-- Párrafo para mostrar el resultado del último intento -->
+      <p class="lowOrHi"></p> <!-- Párrafo para indicar si el número adivinado es demasiado alto o bajo -->
+    </div> <!-- Contenedor de los resultados -->
+    <script>
+      let randomNumber = Math.floor(Math.random() * 100) + 1; // Genera un número aleatorio entre 1 y 100
+
+      const guesses = document.querySelector(".guesses"); // Selecciona el párrafo para mostrar los intentos anteriores
+      const lastResult = document.querySelector(".lastResult"); // Selecciona el párrafo para mostrar el resultado del último intento
+      const lowOrHi = document.querySelector(".lowOrHi"); // Selecciona el párrafo para indicar si el número adivinado es demasiado alto o bajo
+
+      const guessSubmit = document.querySelector(".guessSubmit"); // Selecciona el botón para enviar el número adivinado
+      const guessField = document.querySelector(".guessField"); // Selecciona el campo de entrada para el número a adivinar
+
+      let guessCount = 1; // Contador de intentos
+      let resetButton; // Variable para el botón de reinicio
+
+      function checkGuess() {
+        let userGuess = Number(guessField.value); // Obtiene el número adivinado del campo de entrada
+        if (guessCount === 1) {
+          guesses.textContent = "Intentos anteriores: "; // Inicializa el texto de los intentos anteriores
+        }
+        guesses.textContent += userGuess + " "; // Añade el número adivinado a los intentos anteriores
+
+        if (userGuess === randomNumber) {
+          lastResult.textContent = "¡Felicidades! ¡Lo adivinaste!"; // Muestra el mensaje de éxito
+          lastResult.style.backgroundColor = "green"; // Cambia el color de fondo del resultado a verde
+          lowOrHi.textContent = ""; // Limpia el mensaje de si el número es demasiado alto o bajo
+          setGameOver(); // Llama a la función para finalizar el juego
+        } else if (guessCount === 10) {
+          lastResult.textContent = "¡¡¡Fin del juego!!!"; // Muestra el mensaje de fin del juego
+          setGameOver(); // Llama a la función para finalizar el juego
+        } else {
+          lastResult.textContent = "¡Incorrecto!"; // Muestra el mensaje de error
+          lastResult.style.backgroundColor = "red"; // Cambia el color de fondo del resultado a rojo
+          if (userGuess < randomNumber) {
+            lowOrHi.textContent = "¡El número es muy bajo!"; // Indica que el número adivinado es demasiado bajo
+          } else if (userGuess > randomNumber) {
+            lowOrHi.textContent = "¡El número es muy grande!"; // Indica que el número adivinado es demasiado alto
+          }
+        }
+
+        guessCount++; // Incrementa el contador de intentos
+        guessField.value = ""; // Limpia el campo de entrada
+        guessField.focus(); // Pone el foco en el campo de entrada
+      }
+
+      guessSubmit.addEventListener("click", checkGuess); // Añade un evento de clic al botón de enviar para llamar a la función checkGuess
+
+      function setGameOver() {
+        guessField.disabled = true; // Deshabilita el campo de entrada
+        guessSubmit.disabled = true; // Deshabilita el botón de enviar
+        resetButton = document.createElement("button"); // Crea un nuevo botón para reiniciar el juego
+        resetButton.textContent = "Iniciar nuevo juego"; // Establece el texto del botón de reinicio
+        document.body.append(resetButton); // Añade el botón de reinicio al cuerpo del documento
+        resetButton.addEventListener("click", resetGame); // Añade un evento de clic al botón de reinicio para llamar a la función resetGame
+      }
+
+      function resetGame() {
+        guessCount = 1; // Reinicia el contador de intentos
+
+        const resetParas = document.querySelectorAll(".resultParas p"); // Selecciona todos los párrafos dentro del contenedor de resultados
+        for (let i = 0; i < resetParas.length; i++) {
+          resetParas[i].textContent = ""; // Limpia el texto de todos los párrafos
+        }
+
+        resetButton.parentNode.removeChild(resetButton); // Elimina el botón de reinicio del documento
+
+        guessField.disabled = false; // Habilita el campo de entrada
+        guessSubmit.disabled = false; // Habilita el botón de enviar
+        guessField.value = ""; // Limpia el campo de entrada
+        guessField.focus(); // Pone el foco en el campo de entrada
+
+        lastResult.style.backgroundColor = "white"; // Cambia el color de fondo del resultado a blanco
+
+        randomNumber = Math.floor(Math.random() * 100) + 1; // Genera un nuevo número aleatorio entre 1 y 100
+      }
+
+      // El siguiente bloque de código parece ser un intento de probar la funcionalidad del juego, pero está fuera de lugar y no es necesario para el juego en sí. Se puede eliminar.
+      for (let i = 1; i < 21; i++) {
+        console.log(i);
+      }
+
+      // El siguiente bloque de código intenta limpiar los párrafos de resultados, pero ya se hace esto en la función resetGame. Se puede eliminar.
+      const resetParas = document.querySelectorAll(".resultParas p");
+      for (let i = 0; i < resetParas.length; i++) {
+        resetParas[i].textContent = "";
+      }
+
+    </script>
+ </body>
+</html>
